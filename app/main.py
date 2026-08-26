@@ -12,7 +12,7 @@ def home():
 
 @app.post("/check-risk")
 def check_risk(transaction: Transaction):
-    score, level, reasons = calculate_risk(
+    score, level, decision, reasons = calculate_risk(
         transaction.amount,
         transaction.location_changed,
         transaction.new_device,
@@ -23,5 +23,6 @@ def check_risk(transaction: Transaction):
         "transaction_id": transaction.transaction_id,
         "risk_score": score,
         "risk_level": level,
+        "decision": decision,
         "reasons": reasons
     }

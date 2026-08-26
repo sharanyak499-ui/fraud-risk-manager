@@ -20,9 +20,12 @@ def calculate_risk(amount, location_changed, new_device, failed_attempts):
 
     if score >= 70:
         level = "HIGH"
+        decision = "BLOCK"
     elif score >= 40:
         level = "MEDIUM"
+        decision = "REVIEW"
     else:
         level = "LOW"
+        decision = "APPROVE"
 
-    return score, level, reasons
+    return score, level, decision, reasons
