@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from app.models.transaction import Transaction
 from app.services.risk_engine import calculate_risk
-from app.services.transaction_store import save_transaction, get_transactions
+from app.services.database import create_table, save_transaction, get_transactions
 
 app = FastAPI(title="Fraud Risk Manager")
+
+
+create_table()
 
 
 @app.get("/")
@@ -22,6 +25,7 @@ def check_risk(transaction: Transaction):
 
     result = {
         "transaction_id": transaction.transaction_id,
+        "amount": transaction.amount,
         "risk_score": score,
         "risk_level": level,
         "decision": decision,
