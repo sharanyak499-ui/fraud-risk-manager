@@ -235,3 +235,43 @@ def get_user_average_amount(user_id):
         return 0
 
     return round(result, 2)
+def get_transaction_by_id(transaction_id):
+
+    connection = get_connection()
+
+    cursor = connection.execute("""
+        SELECT
+            transaction_id,
+            user_id,
+            amount,
+            risk_score,
+            risk_level,
+            decision,
+            reasons,
+            ml_result,
+            ml_probability,
+            created_at
+        FROM transactions
+        WHERE transaction_id = ?
+        LIMIT 1
+    """, (transaction_id,))
+
+    row = cursor.fetchone()
+
+    connection.close()
+
+    if row is None:
+        return None
+
+    return {
+        "transaction_id": row[0],
+        "user_id": row[1],
+        "amount": row[2],
+        "risk_score": row[3],
+        "risk_level": row[4],
+        "decision": row[5],
+        "reasons": json.loads(row[6]),
+        "ml_result": row[7],
+        "ml_probability": row[8],
+        "created_at": row[9]
+    }

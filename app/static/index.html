@@ -1505,107 +1505,97 @@ function loadDashboard() {
             ========================= */
 
             const alerts =
-                document.getElementById(
-                    "alerts"
-                );
-
+                document.getElementById("alerts");
 
             alerts.innerHTML = "";
-
 
             const highRiskTransactions =
                 data.filter(
                     t => t.risk_level === "HIGH"
                 );
 
-
-
-            if (
-                highRiskTransactions.length === 0
-            ) {
+            if (highRiskTransactions.length === 0) {
 
                 alerts.innerHTML = `
-
                     <div class="no-alert">
-
-                        âœ… No high-risk transactions detected.
-
+                        &#9989; No high-risk transactions detected.
                     </div>
-
                 `;
 
             }
 
-
-
             highRiskTransactions.forEach(
                 transaction => {
 
-
                     const alert =
-                        document.createElement(
-                            "div"
-                        );
-
+                        document.createElement("div");
 
                     alert.className = "alert";
 
+                    const reasons =
+                        Array.isArray(transaction.reasons)
+                            ? transaction.reasons
+                            : [];
+
+                    const reasonHTML =
+                        reasons
+                            .filter(r => r.points > 0)
+                            .map(
+                                r =>
+                                    `<li>${r.reason} (+${r.points})</li>`
+                            )
+                            .join("");
 
                     alert.innerHTML = `
 
                         <div class="alert-title">
-
                             &#128680; HIGH RISK TRANSACTION
-
                         </div>
-
 
                         <div class="alert-info">
 
                             Transaction:
-
                             <strong>
                                 ${transaction.transaction_id}
                             </strong>
 
                             <br>
 
-
                             Amount:
-
-                            ₹${Number(
+                            &#8377;${Number(
                                 transaction.amount
                             ).toLocaleString("en-IN")}
 
                             <br>
 
-
                             Risk Score:
-
                             <strong>
                                 ${transaction.risk_score}
                             </strong>
 
                             <br>
 
-
                             Decision:
-
                             <strong>
                                 ${transaction.decision}
                             </strong>
+
+                            <br><br>
+
+                            <strong>Risk factors:</strong>
+
+                            <ul class="alert-reasons">
+                                ${reasonHTML || "<li>Risk factors detected</li>"}
+                            </ul>
 
                         </div>
 
                     `;
 
-
                     alerts.appendChild(alert);
-
 
                 }
             );
-
 
 
             /* =========================
