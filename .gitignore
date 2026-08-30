@@ -2,4 +2,18 @@
 .env
 __pycache__/
 *.pyc
-fraud_risk.db
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*_backup.*
+*before_clean*.*
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

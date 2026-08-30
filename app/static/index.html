@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fraud Risk Manager</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: #f3f1ec;
+            color: #172033;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            padding: 24px 45px;
+            border-bottom: 1px solid #e5e1d8;
+            background: #f3f1ec;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+            box-shadow: 0 6px 18px rgba(99, 102, 241, 0.25);
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: 25px;
+            letter-spacing: -0.5px;
+            color: #172033;
+        }
+
+        .brand p {
+            margin: 4px 0 0;
+            color: #7b8495;
+            font-size: 13px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 9px 14px;
+            border-radius: 30px;
+            color: #15803d;
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(34,197,94,0.5);
+        }
+
+        /* =========================
+           CONTAINER
+        ========================= */
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 30px 40px 60px;
+        }
+
+        /* =========================
+           SUMMARY
+        ========================= */
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #faf9f5;
+            border: 1px solid #e5e1d8;
+            border-radius: 18px;
+            padding: 22px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(23,32,51,0.05);
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            right: -35px;
+            top: -35px;
+            opacity: 0.10;
+        }
+
+        .stat-total::after {
+            background: #6366f1;
+        }
+
+        .stat-high::after {
+            background: #ef4444;
+        }
+
+        .stat-medium::after {
+            background: #f59e0b;
+        }
+
+        .stat-low::after {
+            background: #22c55e;
+        }
+
+        .stat-label {
+            color: #7b8495;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+            color: #172033;
+        }
+
+        .stat-subtitle {
+            margin-top: 8px;
+            color: #9aa3b2;
+            font-size: 12px;
+        }
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: #faf9f5;
+            border: 1px solid #e5e1d8;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 4px 15px rgba(23,32,51,0.05);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            margin: 0;
+            font-size: 17px;
+            color: #172033;
+        }
+
+        .panel-description {
+            margin: 5px 0 0;
+            color: #7b8495;
+            font-size: 12px;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: span 2;
+        }
+
+        .field label {
+            color: #667085;
+            font-size: 12px;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 13px 14px;
+            background: #f4f1eb;
+            border: 1px solid #dcd6ca;
+            border-radius: 10px;
+            color: #172033;
+            outline: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        input::placeholder {
+            color: #a0a8b5;
+        }
+
+        input:focus {
+            border-color: #7c3aed;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.10);
+        }
+
+        /* =========================
+           CHECKBOXES
+        ========================= */
+
+        .checkbox-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .check-card {
+            flex: 1;
+            background: #f8f6f1;
+            border: 1px solid #e3ded4;
+            border-radius: 11px;
+            padding: 13px;
+            color: #475467;
+            cursor: pointer;
+        }
+
+        .check-card:hover {
+            border-color: #c4b5fd;
+            background: #faf9ff;
+        }
+
+        .check-card input {
+            margin-right: 7px;
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        button {
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 13px 20px;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(79,70,229,0.20);
+            transition: 0.2s;
+            margin-top: 18px;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(79,70,229,0.25);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* =========================
+           RESULT
+        ========================= */
+
+        .result-box {
+            background: #f3f0e9;
+            border: 1px solid #e1dbd0;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .result-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-meta {
+            color: #667085;
+            margin-top: 18px;
+            font-size: 13px;
+        }
+
+        .score {
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .score-label {
+            color: #7b8495;
+            font-size: 11px;
+            margin-top: 6px;
+        }
+
+        .decision-box {
+            text-align: right;
+        }
+
+        .decision {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .risk-list {
+            padding-left: 20px;
+            color: #475467;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .risk-list strong {
+            margin-left: 5px;
+        }
+
+        /* =========================
+           BADGES
+        ========================= */
+
+        .high {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .medium {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .low {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* =========================
+           CHART
+        ========================= */
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        /* =========================
+           ML FEATURES
+        ========================= */
+
+        .ml-score {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ml-icon {
+            font-size: 30px;
+        }
+
+        .accuracy {
+            font-size: 28px;
+            font-weight: 700;
+            color: #172033;
+        }
+
+        .accuracy-label {
+            color: #7b8495;
+            font-size: 12px;
+        }
+
+        .feature {
+            margin-top: 16px;
+        }
+
+        .feature-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+        }
+
+        .feature-name {
+            font-size: 12px;
+            color: #667085;
+        }
+
+        .feature-value {
+            font-size: 12px;
+            font-weight: 600;
+            color: #344054;
+        }
+
+        .progress {
+            width: 100%;
+            height: 7px;
+            background: #e8e3da;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #7c3aed, #3b82f6);
+        }
+
+        /* =========================
+           ALERTS
+        ========================= */
+
+        .alert {
+            background: #fff7f7;
+            border: 1px solid #fecaca;
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .alert-title {
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .alert-info {
+            color: #667085;
+            font-size: 12px;
+            margin-top: 6px;
+            line-height: 1.7;
+        }
+
+        .no-alert {
+            padding: 15px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            color: #15803d;
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-box {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #faf9f5;
+        }
+
+        th {
+            background: #eeeae2;
+            color: #667085;
+            padding: 13px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e5e1d8;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ece8e0;
+            font-size: 13px;
+            color: #344054;
+            text-align: center;
+        }
+
+        tr:hover {
+            background: #f1eee8;
+        }
+
+        .transaction-id {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+
+        /* =========================
+           EMPTY TABLE
+        ========================= */
+
+        .empty-table {
+            text-align: center;
+            padding: 30px;
+            color: #98a2b3;
+        }
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        .error-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #b45309;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+            text-align: center;
+            padding: 25px;
+            color: #7b8495;
+            font-size: 13px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            text-align: center;
+            color: #98a2b3;
+            font-size: 12px;
+            padding: 30px 0 0;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 900px) {
+
+            .summary {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .main-grid,
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: span 1;
+            }
+
+            .checkbox-row {
+                flex-direction: column;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+        }
+
+    /* ==========================================
+   FINAL UI POLISH
+========================================== */
+
+.alert {
+    padding: 16px 18px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.alert:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(23, 32, 51, 0.08);
+}
+
+.alert-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+}
+
+.alert-info {
+    margin-top: 8px;
+    line-height: 1.8;
+}
+
+.alert-info strong {
+    color: #172033;
+}
+
+.table-box {
+    border: 1px solid #e5e1d8;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+table {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+th {
+    padding: 14px 16px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+td {
+    padding: 14px 16px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+tbody tr {
+    transition: background 0.15s ease;
+}
+
+tbody tr:hover {
+    background: #f5f2ec;
+}
+
+.transaction-id {
+    font-weight: 700;
+    letter-spacing: 0.1px;
+}
+
+.no-alert {
+    padding: 16px 18px;
+    font-size: 13px;
+}
+
+@media (max-width: 700px) {
+    .table-box {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 650px;
+    }
+}
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🛡️
+        </div>
+
+        <div>
+
+            <h1>Fraud Risk Manager</h1>
+
+            <p>
+                Real-time transaction intelligence & fraud detection
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        Monitoring Active
+
+    </div>
+
+</header>
+
+
+
+<main class="container">
+
+
+<!-- =========================
+     SUMMARY
+========================= -->
+
+<section class="summary">
+
+
+    <div class="stat-card stat-total">
+
+        <div class="stat-label">
+            TOTAL TRANSACTIONS
+        </div>
+
+        <p
+            class="stat-number"
+            id="total"
+        >
+            0
+        </p>
+
+        <div class="stat-subtitle">
+            Transactions analyzed
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card stat-high">
+
+        <div class="stat-label">
+            HIGH RISK
+        </div>
+
+        <p
+            class="stat-number"
+            id="high"
+        >
+            0
+        </p>
+
+        <div class="stat-subtitle">
+            Transactions blocked
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card stat-medium">
+
+        <div class="stat-label">
+            MEDIUM RISK
+        </div>
+
+        <p
+            class="stat-number"
+            id="medium"
+        >
+            0
+        </p>
+
+        <div class="stat-subtitle">
+            Transactions requiring review
+        </div>
+
+    </div>
+
+
+
+    <div class="stat-card stat-low">
+
+        <div class="stat-label">
+            LOW RISK
+        </div>
+
+        <p
+            class="stat-number"
+            id="low"
+        >
+            0
+        </p>
+
+        <div class="stat-subtitle">
+            Transactions approved
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =========================
+     SCANNER + RESULT
+========================= -->
+
+<section class="main-grid">
+
+
+    <!-- SCANNER -->
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2 class="panel-title">
+                    &#128269; Risk Scanner
+                </h2>
+
+                <p class="panel-description">
+                    Analyze a transaction before processing
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="field">
+
+                <label>
+                    Transaction ID
+                </label>
+
+                <input
+                    type="text"
+                    id="transaction_id"
+                    placeholder="e.g. TXN1001"
+                >
+
+            </div>
+
+
+
+            <div class="field">
+
+                <label>
+                    User ID
+                </label>
+
+                <input
+                    type="text"
+                    id="user_id"
+                    placeholder="e.g. USER001"
+                >
+
+            </div>
+
+
+
+            <div class="field full">
+
+                <label>
+                    Transaction Amount (₹)
+                </label>
+
+                <input
+                    type="number"
+                    id="amount"
+                    placeholder="Enter amount"
+                    min="1"
+                >
+
+            </div>
+
+
+
+            <div class="field full">
+
+                <label>
+                    Failed Login Attempts
+                </label>
+
+                <input
+                    type="number"
+                    id="failed_attempts"
+                    placeholder="0"
+                    min="0"
+                >
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="checkbox-row">
+
+
+            <label class="check-card">
+
+                <input
+                    type="checkbox"
+                    id="location_changed"
+                >
+
+                &#128205; Location Changed
+
+            </label>
+
+
+
+            <label class="check-card">
+
+                <input
+                    type="checkbox"
+                    id="new_device"
+                >
+
+                &#128187; New Device
+
+            </label>
+
+
+        </div>
+
+
+
+        <button
+            id="scanButton"
+            class="scan-button"
+            onclick="checkRisk()"
+        >
+
+            🛡️ Analyze Transaction
+
+        </button>
+
+
+    </div>
+
+
+
+    <!-- RESULT -->
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2 class="panel-title">
+                    &#129504; Risk Analysis
+                </h2>
+
+                <p class="panel-description">
+                    Rule engine + machine learning prediction
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div id="result">
+
+            <div class="result-box">
+
+                <div
+                    style="
+                        text-align:center;
+                        padding:35px 10px;
+                    "
+                >
+
+                    <div style="font-size:35px;">
+                        🛡️
+                    </div>
+
+                    <p
+                        style="
+                            color:#737c8d;
+                            font-size:13px;
+                        "
+                    >
+
+                        Submit a transaction to see the risk analysis
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =========================
+     ANALYTICS
+========================= -->
+
+<section class="analytics-grid">
+
+
+    <!-- RISK CHART -->
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2 class="panel-title">
+                    &#128202; Risk Distribution
+                </h2>
+
+                <p class="panel-description">
+                    Current transaction risk breakdown
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-container">
+
+            <canvas id="riskChart"></canvas>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ML INSIGHTS -->
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <h2 class="panel-title">
+                    &#129302; ML Model Insights
+                </h2>
+
+                <p class="panel-description">
+                    Random Forest fraud detection model
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="ml-score">
+
+            <div class="ml-icon">
+                &#129302;
+            </div>
+
+            <div>
+
+                <div
+                    class="accuracy"
+                    id="modelAccuracy"
+                >
+                    94.25%
+                </div>
+
+                <div class="accuracy-label">
+                    Model test accuracy
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- IMPORTANT:
+             Dynamic features appear here.
+        -->
+
+        <div id="ml-features">
+
+            <div class="loading">
+
+                Loading model insights...
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =========================
+     FRAUD ALERTS
+========================= -->
+
+<section
+    class="panel"
+    style="margin-bottom:20px;"
+>
+
+
+    <div class="panel-header">
+
+        <div>
+
+            <h2 class="panel-title">
+                &#128680; Fraud Alerts
+            </h2>
+
+            <p class="panel-description">
+                High-risk transactions requiring immediate attention
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div id="alerts">
+
+        <div class="loading">
+            Loading alerts...
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =========================
+     TRANSACTION HISTORY
+========================= -->
+
+<section class="panel">
+
+
+    <div class="panel-header">
+
+        <div>
+
+            <h2 class="panel-title">
+                &#128179; Transaction History
+            </h2>
+
+            <p class="panel-description">
+                Latest monitored transactions
+            </p>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="table-box">
+
+
+        <table>
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Transaction
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Risk Score
+                    </th>
+
+                    <th>
+                        Risk Level
+                    </th>
+
+                    <th>
+                        Decision
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+
+            <tbody id="transactions">
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
+
+
+<div class="footer">
+
+    Fraud Risk Manager • AI-powered transaction monitoring
+
+</div>
+
+
+</main>
+
+
+
+<script>
+
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+let riskChart = null;
+
+
+
+/* =====================================================
+   LOAD DASHBOARD
+===================================================== */
+
+function loadDashboard() {
+
+
+    fetch("/transactions")
+
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load transactions"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+
+        .then(data => {
+
+
+            /* =========================
+               COUNTS
+            ========================= */
+
+            const highCount =
+                data.filter(
+                    t => t.risk_level === "HIGH"
+                ).length;
+
+
+            const mediumCount =
+                data.filter(
+                    t => t.risk_level === "MEDIUM"
+                ).length;
+
+
+            const lowCount =
+                data.filter(
+                    t => t.risk_level === "LOW"
+                ).length;
+
+
+
+            document.getElementById(
+                "total"
+            ).textContent = data.length;
+
+
+            document.getElementById(
+                "high"
+            ).textContent = highCount;
+
+
+            document.getElementById(
+                "medium"
+            ).textContent = mediumCount;
+
+
+            document.getElementById(
+                "low"
+            ).textContent = lowCount;
+
+
+
+            /* =========================
+               TRANSACTION TABLE
+            ========================= */
+
+            const table =
+                document.getElementById(
+                    "transactions"
+                );
+
+
+            table.innerHTML = "";
+
+
+
+            if (data.length === 0) {
+
+                table.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="empty-table"
+                        >
+
+                            No transactions found.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+
+
+            data.forEach(transaction => {
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                const riskLevel =
+                    transaction.risk_level ||
+                    "LOW";
+
+
+                const decision =
+                    transaction.decision ||
+                    "APPROVE";
+
+
+                row.innerHTML = `
+
+                    <td class="transaction-id">
+
+                        ${transaction.transaction_id}
+
+                    </td>
+
+
+                    <td>
+
+                        ₹${Number(
+                            transaction.amount
+                        ).toLocaleString("en-IN")}
+
+                    </td>
+
+
+                    <td>
+
+                        ${transaction.risk_score}
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="badge ${riskLevel.toLowerCase()}"
+                        >
+
+                            ${riskLevel}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="badge ${riskLevel.toLowerCase()}"
+                        >
+
+                            ${decision}
+
+                        </span>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+
+            });
+
+
+
+            /* =========================
+               FRAUD ALERTS
+            ========================= */
+
+            const alerts =
+                document.getElementById(
+                    "alerts"
+                );
+
+
+            alerts.innerHTML = "";
+
+
+            const highRiskTransactions =
+                data.filter(
+                    t => t.risk_level === "HIGH"
+                );
+
+
+
+            if (
+                highRiskTransactions.length === 0
+            ) {
+
+                alerts.innerHTML = `
+
+                    <div class="no-alert">
+
+                        âœ… No high-risk transactions detected.
+
+                    </div>
+
+                `;
+
+            }
+
+
+
+            highRiskTransactions.forEach(
+                transaction => {
+
+
+                    const alert =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    alert.className = "alert";
+
+
+                    alert.innerHTML = `
+
+                        <div class="alert-title">
+
+                            &#128680; HIGH RISK TRANSACTION
+
+                        </div>
+
+
+                        <div class="alert-info">
+
+                            Transaction:
+
+                            <strong>
+                                ${transaction.transaction_id}
+                            </strong>
+
+                            <br>
+
+
+                            Amount:
+
+                            ₹${Number(
+                                transaction.amount
+                            ).toLocaleString("en-IN")}
+
+                            <br>
+
+
+                            Risk Score:
+
+                            <strong>
+                                ${transaction.risk_score}
+                            </strong>
+
+                            <br>
+
+
+                            Decision:
+
+                            <strong>
+                                ${transaction.decision}
+                            </strong>
+
+                        </div>
+
+                    `;
+
+
+                    alerts.appendChild(alert);
+
+
+                }
+            );
+
+
+
+            /* =========================
+               CHART
+            ========================= */
+
+            const ctx =
+                document.getElementById(
+                    "riskChart"
+                );
+
+
+            if (riskChart) {
+
+                riskChart.destroy();
+
+            }
+
+
+
+            riskChart = new Chart(
+                ctx,
+                {
+
+                    type: "doughnut",
+
+                    data: {
+
+                        labels: [
+                            "High Risk",
+                            "Medium Risk",
+                            "Low Risk"
+                        ],
+
+                        datasets: [{
+
+                            data: [
+                                highCount,
+                                mediumCount,
+                                lowCount
+                            ],
+
+                            borderWidth: 0
+
+                        }]
+
+                    },
+
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        cutout: "68%",
+
+
+                        plugins: {
+
+                            legend: {
+
+                                position: "bottom",
+
+
+                                labels: {
+
+                                    color: "#667085",
+
+                                    padding: 18,
+
+                                    font: {
+
+                                        size: 12
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+
+        })
+
+
+        .catch(error => {
+
+            console.error(
+                "Dashboard error:",
+                error
+            );
+
+
+            document.getElementById(
+                "transactions"
+            ).innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="empty-table"
+                    >
+
+                        [WARNING]  Unable to load transactions.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        });
+
+
+}
+
+
+
+/* =====================================================
+   CHECK RISK
+===================================================== */
+
+function checkRisk() {
+
+
+    const transactionId =
+        document
+            .getElementById(
+                "transaction_id"
+            )
+            .value
+            .trim();
+
+
+    const userId =
+        document
+            .getElementById(
+                "user_id"
+            )
+            .value
+            .trim();
+
+
+    const amount =
+        document
+            .getElementById(
+                "amount"
+            )
+            .value;
+
+
+    const failedAttempts =
+        document
+            .getElementById(
+                "failed_attempts"
+            )
+            .value;
+
+
+    const locationChanged =
+        document
+            .getElementById(
+                "location_changed"
+            )
+            .checked;
+
+
+    const newDevice =
+        document
+            .getElementById(
+                "new_device"
+            )
+            .checked;
+
+
+
+    /* =========================
+       VALIDATION
+    ========================= */
+
+    if (
+        !transactionId ||
+        !userId ||
+        !amount
+    ) {
+
+
+        document.getElementById(
+            "result"
+        ).innerHTML = `
+
+            <div class="error-box">
+
+                [WARNING]  Please enter Transaction ID,
+                User ID and Amount.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+
+    /* =========================
+       BUTTON
+    ========================= */
+
+    const button =
+        document.getElementById(
+            "scanButton"
+        );
+
+
+    button.disabled = true;
+
+
+    button.textContent =
+        "â³ Analyzing...";
+
+
+
+    /* =========================
+       REQUEST
+    ========================= */
+
+    fetch(
+        "/check-risk",
+        {
+
+            method: "POST",
+
+
+            headers: {
+
+                "Content-Type":
+                    "application/json"
+
+            },
+
+
+            body: JSON.stringify({
+
+                transaction_id:
+                    transactionId,
+
+                user_id:
+                    userId,
+
+                amount:
+                    Number(amount),
+
+                failed_attempts:
+                    Number(
+                        failedAttempts || 0
+                    ),
+
+                location_changed:
+                    locationChanged,
+
+                new_device:
+                    newDevice
+
+            })
+
+        }
+    )
+
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Risk API request failed"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+
+        .then(data => {
+
+
+            /* =========================
+               RESTORE BUTTON
+            ========================= */
+
+            button.disabled = false;
+
+            button.textContent =
+                "🛡️ Analyze Transaction";
+
+
+
+            /* =========================
+               DUPLICATE
+            ========================= */
+
+            if (data.error) {
+
+
+                document.getElementById(
+                    "result"
+                ).innerHTML = `
+
+                    <div class="error-box">
+
+                        [WARNING] 
+
+                        <strong>
+                            Transaction Not Saved
+                        </strong>
+
+                        <br><br>
+
+                        ${data.error}
+
+                        <br><br>
+
+                        Transaction ID:
+
+                        ${data.transaction_id || transactionId}
+
+                    </div>
+
+                `;
+
+
+                return;
+
+            }
+
+
+
+            /* =========================
+               SCORE COLOR
+            ========================= */
+
+            let scoreColor =
+                "#16a34a";
+
+
+            if (
+                data.risk_level ===
+                "MEDIUM"
+            ) {
+
+                scoreColor =
+                    "#d97706";
+
+            }
+
+
+            if (
+                data.risk_level ===
+                "HIGH"
+            ) {
+
+                scoreColor =
+                    "#dc2626";
+
+            }
+
+
+
+            /* =========================
+               RISK FACTORS
+            ========================= */
+
+            const riskFactors =
+                (data.reasons || [])
+                    .map(item => {
+
+
+                        if (
+                            typeof item ===
+                            "string"
+                        ) {
+
+                            return `
+
+                                <li>
+                                    ${item}
+                                </li>
+
+                            `;
+
+                        }
+
+
+                        return `
+
+                            <li>
+
+                                ${item.reason}
+
+                                <strong>
+                                    (+${item.points})
+                                </strong>
+
+                            </li>
+
+                        `;
+
+                    })
+                    .join("");
+
+
+
+            /* =========================
+               RESULT
+            ========================= */
+
+            document.getElementById(
+                "result"
+            ).innerHTML = `
+
+                <div class="result-box">
+
+
+                    <div class="result-top">
+
+
+                        <div>
+
+                            <div
+                                class="score"
+                                style="
+                                    color:${scoreColor};
+                                "
+                            >
+
+                                ${data.risk_score}
+
+                            </div>
+
+
+                            <div class="score-label">
+
+                                RISK SCORE / 100
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="decision-box">
+
+
+                            <div>
+
+                                <span
+                                    class="badge ${String(
+                                        data.risk_level
+                                    ).toLowerCase()}"
+                                >
+
+                                    ${data.risk_level}
+
+                                </span>
+
+                            </div>
+
+
+                            <div
+                                class="decision"
+                                style="
+                                    color:${scoreColor};
+                                    margin-top:8px;
+                                "
+                            >
+
+                                ${data.decision}
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="result-meta">
+
+
+                        <strong>
+                            Transaction:
+                        </strong>
+
+                        ${data.transaction_id}
+
+
+                        <br>
+
+
+                        <strong>
+                            Amount:
+                        </strong>
+
+                        ₹${Number(
+                            data.amount
+                        ).toLocaleString("en-IN")}
+
+
+                    </div>
+
+
+
+                    <div style="margin-top:18px;">
+
+
+                        <strong
+                            style="font-size:13px;"
+                        >
+
+                            Risk Factors
+
+                        </strong>
+
+
+
+                        <ul class="risk-list">
+
+                            ${
+                                riskFactors ||
+                                "<li>No additional risk factors detected.</li>"
+                            }
+
+                        </ul>
+
+
+                    </div>
+
+
+
+                    ${
+                        data.ml_result
+                        ?
+                        `
+
+                        <div
+                            class="ml-prediction"
+                            style="
+                                margin-top:16px;
+                                padding:12px;
+                                border-radius:10px;
+                                background:#f8f6f1;
+                                border:1px solid #e3ded4;
+                                font-size:12px;
+                                color:#667085;
+                            "
+                        >
+
+                            &#129302; ML Prediction:
+
+                            <strong
+                                style="
+                                    color:#172033;
+                                "
+                            >
+
+                                ${data.ml_result}
+
+                            </strong>
+
+
+                            &nbsp; • &nbsp;
+
+
+			Fraud Probability:
+
+                            <strong
+                                style="
+                                    color:#172033;
+                                "
+                            >
+
+                                ${data.ml_probability ?? "N/A"}%
+
+                            </strong>
+
+                        </div>
+
+                        `
+                        :
+                        ""
+                    }
+
+
+                </div>
+
+            `;
+
+
+
+            /* =========================
+               REFRESH DASHBOARD
+            ========================= */
+
+            loadDashboard();
+
+
+        })
+
+
+        .catch(error => {
+
+
+            console.error(
+                "Risk check error:",
+                error
+            );
+
+
+            button.disabled = false;
+
+
+            button.textContent =
+                "🛡️ Analyze Transaction";
+
+
+            document.getElementById(
+                "result"
+            ).innerHTML = `
+
+                <div class="error-box">
+
+                    [WARNING] 
+
+                    <strong>
+                        Something went wrong
+                    </strong>
+
+                    <br><br>
+
+                    Unable to analyze the transaction.
+
+                    <br><br>
+
+                    Please make sure the server is running.
+
+                </div>
+
+            `;
+
+        });
+
+
+}
+
+
+
+/* =====================================================
+   LOAD ML MODEL INSIGHTS
+===================================================== */
+
+function loadModelInsights() {
+
+
+    fetch("/model-info")
+
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Model info request failed"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+
+        .then(data => {
+
+
+            const container =
+                document.getElementById(
+                    "ml-features"
+                );
+
+
+            const featureNames = {
+
+                amount:
+                    "Transaction Amount",
+
+                failed_attempts:
+                    "Failed Attempts",
+
+                velocity:
+                    "Transaction Velocity",
+
+                location_changed:
+                    "Location Changed",
+
+                new_device:
+                    "New Device"
+
+            };
+
+
+
+            const importance =
+                data.feature_importance || {};
+
+
+
+            const sortedFeatures =
+                Object.entries(
+                    importance
+                )
+                .sort(
+                    (a, b) =>
+                        Number(b[1]) -
+                        Number(a[1])
+                );
+
+
+
+            container.innerHTML = "";
+
+
+
+            if (
+                sortedFeatures.length === 0
+            ) {
+
+                container.innerHTML = `
+
+                    <div class="loading">
+
+                        No feature importance data available.
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+
+            sortedFeatures.forEach(
+                ([feature, value]) => {
+
+
+                    const displayName =
+                        featureNames[feature] ||
+                        feature;
+
+
+                    const numericValue =
+                        Number(value);
+
+
+
+                    container.innerHTML += `
+
+                        <div class="feature">
+
+
+                            <div class="feature-header">
+
+
+                                <span
+                                    class="feature-name"
+                                >
+
+                                    ${displayName}
+
+                                </span>
+
+
+                                <span
+                                    class="feature-value"
+                                >
+
+                                    ${numericValue.toFixed(2)}%
+
+                                </span>
+
+
+                            </div>
+
+
+
+                            <div class="progress">
+
+
+                                <div
+                                    class="progress-bar"
+                                    style="
+                                        width:${Math.min(
+                                            numericValue,
+                                            100
+                                        )}%;
+                                    "
+                                ></div>
+
+
+                            </div>
+
+
+                        </div>
+
+                    `;
+
+
+                }
+            );
+
+
+            /* =========================
+               MODEL ACCURACY
+            ========================= */
+
+            if (
+                data.accuracy !== undefined
+            ) {
+
+
+                let accuracy =
+                    Number(data.accuracy);
+
+
+                if (
+                    accuracy <= 1
+                ) {
+
+                    accuracy =
+                        accuracy * 100;
+
+                }
+
+
+                document.getElementById(
+                    "modelAccuracy"
+                ).textContent =
+                    accuracy.toFixed(2) + "%";
+
+
+            }
+
+
+        })
+
+
+        .catch(error => {
+
+
+            console.error(
+                "Model insights error:",
+                error
+            );
+
+
+            document.getElementById(
+                "ml-features"
+            ).innerHTML = `
+
+                <div class="error-box">
+
+                    [WARNING]  Unable to load model insights.
+
+                </div>
+
+            `;
+
+        });
+
+
+}
+
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+loadDashboard();
+
+loadModelInsights();
+
+
+</script>
+
+
+</body>
+
+</html>
+
+
+
+

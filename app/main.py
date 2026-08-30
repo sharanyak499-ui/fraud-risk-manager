@@ -1,42 +1,191 @@
+
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+
+from app.models import transaction
 from app.models.transaction import Transaction
+
 from app.services.risk_engine import calculate_risk
-from app.services.database import create_table, save_transaction, get_transactions
 
-app = FastAPI(title="Fraud Risk Manager")
+from app.services.database import (
+    create_table,
+    save_transaction,
+    get_transactions,
+    transaction_exists,
+    get_user_transaction_velocity,
+    get_user_average_amount
+)
+from app.ml.model_info import get_model_info
 
+
+# ==========================================
+# CREATE FASTAPI APPLICATION
+# ==========================================
+
+app = FastAPI(
+    title="Fraud Risk Manager"
+)
+
+
+# ==========================================
+# STATIC FILES
+# ==========================================
+
+app.mount(
+    "/static",
+    StaticFiles(directory="app/static"),
+    name="static"
+)
+
+
+# ==========================================
+# CREATE DATABASE TABLE
+# ==========================================
 
 create_table()
 
 
-@app.get("/")
-def home():
-    return {"message": "Fraud Risk Manager is running"}
+# ==========================================
+# DASHBOARD
+# ==========================================
 
+@app.get("/", response_class=HTMLResponse)
+def dashboard():
+
+    with open(
+        "app/static/index.html",
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        return file.read()
+
+
+# ==========================================
+# CHECK TRANSACTION RISK
+# ==========================================
 
 @app.post("/check-risk")
 def check_risk(transaction: Transaction):
-    score, level, decision, reasons = calculate_risk(
-        transaction.amount,
-        transaction.location_changed,
-        transaction.new_device,
-        transaction.failed_attempts
-    )
+
+
+    # --------------------------------------
+    # 1. CHECK DUPLICATE TRANSACTION
+    # --------------------------------------
+
+    if transaction_exists(
+        transaction.transaction_id
+    ):
+
+        return {
+
+            "error":
+                "Transaction ID already exists",
+
+            "transaction_id":
+                transaction.transaction_id
+
+        }
+
+
+    # --------------------------------------
+# 2. CALCULATE USER TRANSACTION VELOCITY
+# --------------------------------------
+
+    velocity = get_user_transaction_velocity(
+    transaction.user_id,
+    5
+) + 1
+
+    user_average_amount = get_user_average_amount(
+    transaction.user_id
+)
+
+    # --------------------------------------
+    # 4. CALCULATE FINAL RISK
+    # --------------------------------------
+
+    score, level, decision, reasons, ml_result, ml_confidence, fraud_probability = calculate_risk(
+    transaction.amount,
+
+    transaction.location_changed,
+
+    transaction.new_device,
+
+    transaction.failed_attempts,
+
+    velocity,
+
+    user_average_amount
+
+)
+
+
+    # --------------------------------------
+    # 5. CREATE RESULT
+    # --------------------------------------
 
     result = {
-        "transaction_id": transaction.transaction_id,
-        "amount": transaction.amount,
-        "risk_score": score,
-        "risk_level": level,
-        "decision": decision,
-        "reasons": reasons
+
+        "transaction_id":
+            transaction.transaction_id,
+
+        "user_id":
+            transaction.user_id,
+
+        "amount":
+            transaction.amount,
+
+        "risk_score":
+            score,
+
+        "risk_level":
+            level,
+
+        "decision":
+            decision,
+
+        "reasons":
+            reasons,
+
+        "ml_result":
+            ml_result,
+
+        "ml_probability":
+    	    fraud_probability
     }
 
-    save_transaction(result)
+
+    # --------------------------------------
+    # 6. SAVE TRANSACTION
+    # --------------------------------------
+
+    save_transaction(
+        result
+    )
+
+
+    # --------------------------------------
+    # 7. RETURN RESULT
+    # --------------------------------------
 
     return result
 
 
+# ==========================================
+# GET TRANSACTION HISTORY
+# ==========================================
+
 @app.get("/transactions")
 def transactions():
+
     return get_transactions()
+# ==========================================
+# ML MODEL INFORMATION
+# ==========================================
+
+@app.get("/model-info")
+def model_info():
+
+    return get_model_info()

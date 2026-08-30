@@ -1,0 +1,104 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #151a23;
+    color: #f5f7fa;
+    margin: 0;
+    padding: 30px;
+}
+
+h1 {
+    text-align: center;
+    color: #ffffff;
+}
+
+p {
+    text-align: center;
+    color: #b8c0cc;
+}
+
+h2 {
+    color: #ffffff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1d2430;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background-color: #273142;
+    color: #ffffff;
+    padding: 12px;
+}
+
+td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #343d4d;
+    color: #e5e9f0;
+}
+
+tr:hover {
+    background-color: #252e3c;
+}
+/* =========================
+   BRIGHTER DARK DASHBOARD
+========================= */
+
+body {
+    background: #151a23 !important;
+    color: #f5f7fa !important;
+}
+
+.panel {
+    background: #1d2430 !important;
+}
+
+.panel-header {
+    background: #1d2430 !important;
+}
+
+input,
+select {
+    background: #252e3c !important;
+    color: #ffffff !important;
+    border-color: #3a4658 !important;
+}
+
+table {
+    background: #1d2430 !important;
+}
+
+th {
+    background: #273142 !important;
+}
+
+td {
+    background: #1d2430 !important;
+    color: #e5e9f0 !important;
+    border-color: #343d4d !important;
+}
+
+tr:hover td {
+    background: #252e3c !important;
+}
+
+.result-box {
+    background: #1d2430 !important;
+}
+
+.chart-container {
+    background: #1d2430 !important;
+}
+
+.ml-score,
+.feature {
+    background: #1d2430 !important;
+}
+
+.alert {
+    background: #211d22 !important;
+}
