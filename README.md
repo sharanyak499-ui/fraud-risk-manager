@@ -12,6 +12,19 @@ The system analyzes transaction behavior, calculates a risk score from 0–100, 
 
 ---
 
+## 🚀 Live Demo
+
+**Dashboard:**  
+https://fraud-risk-manager-h2ew.onrender.com
+
+**API Documentation:**  
+https://fraud-risk-manager-h2ew.onrender.com/docs
+
+**Health Check:**  
+https://fraud-risk-manager-h2ew.onrender.com/health
+
+---
+
 ## 🚀 Key Features
 
 - Real-time transaction risk analysis
@@ -29,6 +42,7 @@ The system analyzes transaction behavior, calculates a risk score from 0–100, 
 - Risk distribution visualization
 - ML feature importance
 - REST API using FastAPI
+- Duplicate transaction protection
 - Automated API tests
 - Health monitoring endpoint
 
@@ -40,40 +54,38 @@ A transaction passes through multiple layers of analysis:
 
 ```text
 Transaction
-     │
-     ▼
+     |
+     v
 Input Validation
-     │
-     ▼
+     |
+     v
 Rule-Based Risk Engine
-     │
-     ├── Transaction Amount
-     ├── Location Change
-     ├── New Device
-     ├── Failed Login Attempts
-     ├── Transaction Velocity
-     └── User Behavioral History
-     │
-     ▼
+     |
+     +-- Transaction Amount
+     +-- Location Change
+     +-- New Device
+     +-- Failed Login Attempts
+     +-- Transaction Velocity
+     +-- User Behavioral History
+     |
+     v
 Random Forest ML Model
-     │
-     ▼
+     |
+     v
 ML Fraud Probability
-     │
-     ▼
+     |
+     v
 Combined Risk Score
-     │
-     ▼
-┌───────────────┐
-│ Risk Decision │
-├───────────────┤
-│ LOW → APPROVE │
-│ MEDIUM → REVIEW│
-│ HIGH → BLOCK  │
-└───────────────┘
-     │
-     ▼
+     |
+     v
+Risk Decision
+     |
+     +-- LOW    → APPROVE
+     +-- MEDIUM → REVIEW
+     +-- HIGH   → BLOCK
+     |
+     v
 SQLite Database
-     │
-     ▼
-Dashboard / API
+     |
+     v
+Dashboard / REST API
