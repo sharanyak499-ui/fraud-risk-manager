@@ -17,3 +17,6 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Final dashboard backups
+*_backup_before_final.*
