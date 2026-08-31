@@ -1,132 +1,79 @@
-# Fraud Risk Manager
+# 🛡️ Fraud Risk Manager
 
 ### AI-Powered Real-Time Transaction Fraud Detection
 
-Fraud Risk Manager is a real-time transaction intelligence system that combines rule-based risk analysis with a machine learning model to identify potentially fraudulent transactions.
+Fraud Risk Manager is a real-time transaction intelligence and fraud detection system that combines a rule-based risk engine with a Random Forest machine learning model.
 
-## Features
+The system analyzes transaction behavior, calculates a risk score from 0–100, predicts fraud probability, and recommends one of three actions:
+
+- ✅ APPROVE — Low risk
+- ⚠️ REVIEW — Medium risk
+- 🚨 BLOCK — High risk
+
+---
+
+## 🚀 Key Features
 
 - Real-time transaction risk analysis
 - Rule-based fraud detection
-- Random Forest machine learning model
-- Fraud probability prediction
-- Risk score from 0 to 100
-- LOW, MEDIUM and HIGH risk classification
-- APPROVE, REVIEW and BLOCK decisions
-- Transaction history using SQLite
-- User transaction velocity detection
+- Random Forest fraud classification
+- ML fraud probability prediction
+- Risk score from 0–100
+- LOW / MEDIUM / HIGH risk classification
+- APPROVE / REVIEW / BLOCK decisions
+- Transaction velocity detection
+- User transaction behavior analysis
 - User average transaction amount analysis
-- ML feature importance visualization
+- SQLite transaction storage
 - Fraud alert dashboard
+- Risk distribution visualization
+- ML feature importance
+- REST API using FastAPI
+- Automated API tests
 - Health monitoring endpoint
-- REST API with FastAPI
-- Interactive web dashboard
 
-## Technology Stack
+---
 
-- Python
-- FastAPI
-- SQLite
-- Pandas
-- Scikit-learn
-- Joblib
-- Pydantic
-- HTML
-- CSS
-- JavaScript
-- Random Forest Classifier
+## 🧠 How It Works
 
-## Machine Learning
-
-The fraud detection model uses the following transaction features:
-
-- Transaction amount
-- Location change
-- New device
-- Failed login attempts
-- Transaction velocity
-
-The current model achieves approximately 94.25% test accuracy on the generated dataset.
-
-## Risk Engine
-
-The system combines multiple risk signals including:
-
-- Transaction amount
-- Location changes
-- New device detection
-- Failed login attempts
-- Transaction velocity
-- User transaction history
-- User average transaction amount
-- Machine learning fraud prediction
-
-The final risk score determines the transaction decision:
-
-| Risk Level | Decision |
-|------------|----------|
-| LOW | APPROVE |
-| MEDIUM | REVIEW |
-| HIGH | BLOCK |
-
-## API Endpoints
-
-### Health Check
-
-GET `/health`
-
-Returns the health status of the application, ML model and database.
-
-### Analyze Transaction
-
-POST `/check-risk`
-
-Analyzes a transaction and returns:
-
-- Risk score
-- Risk level
-- Decision
-- Risk factors
-- ML prediction
-- Fraud probability
-
-### Transaction History
-
-GET `/transactions`
-
-Returns previously analyzed transactions.
-
-### Transaction Lookup
-
-GET `/transactions/{transaction_id}`
-
-Returns details of a specific transaction.
-
-### ML Model Information
-
-GET `/model-info`
-
-Returns the ML model type and feature importance.
-
-## Running the Project
-
-Create and activate the virtual environment:
+A transaction passes through multiple layers of analysis:
 
 ```text
-python -m venv .venv
-.venv\Scripts\activate
-```
-
-## Dashboard Screenshots
-
-### Fraud Risk Dashboard
-
-![Fraud Risk Dashboard](Screenshot%202026-08-31%20190029.png)
-
-### Transaction Risk Analysis
-
-![Transaction Risk Analysis](Screenshot%202026-08-31%20190048.png)
-
-### Transaction History
-
-![Transaction History](Screenshot%202026-08-31%20190108.png)
+Transaction
+     │
+     ▼
+Input Validation
+     │
+     ▼
+Rule-Based Risk Engine
+     │
+     ├── Transaction Amount
+     ├── Location Change
+     ├── New Device
+     ├── Failed Login Attempts
+     ├── Transaction Velocity
+     └── User Behavioral History
+     │
+     ▼
+Random Forest ML Model
+     │
+     ▼
+ML Fraud Probability
+     │
+     ▼
+Combined Risk Score
+     │
+     ▼
+┌───────────────┐
+│ Risk Decision │
+├───────────────┤
+│ LOW → APPROVE │
+│ MEDIUM → REVIEW│
+│ HIGH → BLOCK  │
+└───────────────┘
+     │
+     ▼
+SQLite Database
+     │
+     ▼
+Dashboard / API
