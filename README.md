@@ -89,3 +89,52 @@ SQLite Database
      |
      v
 Dashboard / REST API
+
+---
+
+## 🛠️ Tech Stack
+
+- **Backend:** Python, FastAPI
+- **Machine Learning:** Scikit-learn, Random Forest
+- **Database:** SQLite
+- **Frontend:** HTML, CSS, JavaScript
+- **Testing:** Pytest
+- **Deployment:** Render
+- **Version Control:** Git & GitHub
+
+---
+
+## 📁 Project Structure
+
+```text
+fraud-risk-manager/
+│
+├── app/
+│   ├── ml/
+│   │   ├── fraud_dataset.csv
+│   │   ├── fraud_model.pkl
+│   │   ├── train_model.py
+│   │   ├── generate_dataset.py
+│   │   ├── feature_importance.py
+│   │   └── model_info.py
+│   │
+│   ├── models/
+│   │   └── transaction.py
+│   │
+│   ├── services/
+│   │   ├── database.py
+│   │   ├── ml_engine.py
+│   │   └── risk_engine.py
+│   │
+│   ├── static/
+│   │   ├── index.html
+│   │   └── style.css
+│   │
+│   └── main.py
+│
+├── tests/
+│   └── test_fraud_manager.py
+│
+├── requirements.txt
+├── Procfile
+└── README.md
