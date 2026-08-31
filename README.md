@@ -115,21 +115,3 @@ Create and activate the virtual environment:
 ```text
 python -m venv .venv
 .venv\Scripts\activate
-
-## Dashboard Screenshots
-
-### Fraud Risk Dashboard
-![Fraud Risk Dashboard](Screenshot%202026-08-31%20190029.png)
-
-### Transaction Risk Analysis
-![Transaction Risk Analysis](Screenshot%202026-08-31%20190048.png)
-
-### Transaction History
-![Transaction History](Screenshot%202026-08-31%20190108.png)
-## Running the Project
-
-Create and activate the virtual environment:
-
-```text
-python -m venv .venv
-.venv\Scripts\activate
