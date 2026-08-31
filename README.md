@@ -89,6 +89,7 @@ SQLite Database
      |
      v
 Dashboard / REST API
+```
 
 ---
 
