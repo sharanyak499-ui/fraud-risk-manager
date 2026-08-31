@@ -126,3 +126,10 @@ python -m venv .venv
 
 ### Transaction History
 ![Transaction History](Screenshot%202026-08-31%20190108.png)
+## Running the Project
+
+Create and activate the virtual environment:
+
+```text
+python -m venv .venv
+.venv\Scripts\activate
